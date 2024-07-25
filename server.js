@@ -17,6 +17,9 @@ const { initialize } = require("./modules/collegeData");
 var collegeData = require("./modules/collegeData");
 
 var app = express();
+
+// Serve static files from the "public" directory
+app.use(express.static('public'));
 app.set('views', path.join(__dirname, 'views'));
 
 // Setup Handlebars with custom helpers
@@ -52,8 +55,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-// Serve static files from the "public" directory
-app.use(express.static('public'));
 
 // Add body-parser middleware
 app.use(express.urlencoded({ extended: true }));
