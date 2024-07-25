@@ -17,6 +17,7 @@ const { initialize } = require("./modules/collegeData");
 var collegeData = require("./modules/collegeData");
 
 var app = express();
+app.set('views', path.join(__dirname, 'views'));
 
 // Setup Handlebars with custom helpers
 const hbs = exphbs.create({
