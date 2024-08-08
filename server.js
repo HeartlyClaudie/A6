@@ -1,5 +1,5 @@
 /*********************************************************************************
-* WEB700 – Assignment 04
+* WEB700 – Assignment 06
 * I declare that this assignment is my own work in accordance with Seneca Academic Policy. No part
 * of this assignment has been copied manually or electronically from any other source
 * (including 3rd party web sites) or distributed to other students.
@@ -65,7 +65,11 @@ app.get("/students", (req, res) => {
     if (req.query.course) {
         collegeData.getStudentsByCourse(req.query.course)
             .then(data => {
-                res.render("students", { students: data });
+                if (data.length > 0) {
+                    res.render("students", { students: data });
+                } else {
+                    res.render("students", { message: "no results" });
+                }
             })
             .catch(err => {
                 res.render("students", { message: "no results" });
@@ -73,7 +77,11 @@ app.get("/students", (req, res) => {
     } else {
         collegeData.getAllStudents()
             .then(data => {
-                res.render("students", { students: data });
+                if (data.length > 0) {
+                    res.render("students", { students: data });
+                } else {
+                    res.render("students", { message: "no results" });
+                }
             })
             .catch(err => {
                 res.render("students", { message: "no results" });
@@ -81,12 +89,15 @@ app.get("/students", (req, res) => {
     }
 });
 
-
 // GET /courses
 app.get("/courses", (req, res) => {
     collegeData.getCourses()
         .then(data => {
-            res.render("courses", { courses: data });
+            if (data.length > 0) {
+                res.render("courses", { courses: data });
+            } else {
+                res.render("courses", { message: "no results" });
+            }
         })
         .catch(err => {
             res.render("courses", { message: "no results" });
@@ -110,8 +121,15 @@ app.get("/htmlDemo", (req, res) => {
 
 // GET /students/add
 app.get("/students/add", (req, res) => {
-    res.render('addStudent');
+    collegeData.getCourses()
+        .then((data) => {
+            res.render("addStudent", { courses: data });
+        })
+        .catch((err) => {
+            res.render("addStudent", { courses: [] });
+        });
 });
+
 
 // POST /students/add
 app.post("/students/add", (req, res) => {
@@ -137,14 +155,47 @@ app.get("/course/:id", (req, res) => {
 
 // GET /student/:studentNum
 app.get("/student/:studentNum", (req, res) => {
+    // Initialize an empty object to store the values
+    let viewData = {};
+
     collegeData.getStudentByNum(req.params.studentNum)
-        .then(data => {
-            res.render("student", { student: data });
+        .then((studentData) => {
+            if (studentData) {
+                viewData.student = studentData; // Store student data in the "viewData" object as "student"
+            } else {
+                viewData.student = null; // Set student to null if none were returned
+            }
         })
-        .catch(err => {
-            res.status(404).send("Student not found");
+        .catch((err) => {
+            viewData.student = null; // Set student to null if there was an error
+        })
+        .then(() => {
+            return collegeData.getCourses();
+        })
+        .then((courseData) => {
+            viewData.courses = courseData; // Store course data in the "viewData" object as "courses"
+
+            // Loop through viewData.courses and once we have found the courseId that matches
+            // the student's "course" value, add a "selected" property to the matching
+            // viewData.courses object
+            for (let i = 0; i < viewData.courses.length; i++) {
+                if (viewData.courses[i].courseId == viewData.student.course) {
+                    viewData.courses[i].selected = true;
+                }
+            }
+        })
+        .catch((err) => {
+            viewData.courses = []; // Set courses to empty if there was an error
+        })
+        .then(() => {
+            if (viewData.student == null) { // If no student, return an error
+                res.status(404).send("Student Not Found");
+            } else {
+                res.render("student", { viewData: viewData }); // Render the "student" view
+            }
         });
 });
+
 
 // POST /student/update
 app.post("/student/update", (req, res) => {
@@ -154,6 +205,55 @@ app.post("/student/update", (req, res) => {
         })
         .catch(err => {
             res.status(500).send("Unable to update student");
+        });
+});
+
+// GET /courses/add
+app.get("/courses/add", (req, res) => {
+    res.render("addCourse");
+});
+
+// POST /courses/add
+app.post("/courses/add", (req, res) => {
+    collegeData.addCourse(req.body)
+        .then(() => {
+            res.redirect("/courses");
+        })
+        .catch(err => {
+            res.status(500).send("Unable to add course");
+        });
+});
+
+// POST /course/update
+app.post("/course/update", (req, res) => {
+    collegeData.updateCourse(req.body)
+        .then(() => {
+            res.redirect("/courses");
+        })
+        .catch(err => {
+            res.status(500).send("Unable to update course");
+        });
+});
+
+// GET /course/delete/:id
+app.get("/course/delete/:id", (req, res) => {
+    collegeData.deleteCourseById(req.params.id)
+        .then(() => {
+            res.redirect("/courses");
+        })
+        .catch(err => {
+            res.status(500).send("Unable to Remove Course / Course not found");
+        });
+});
+
+// GET /student/delete/:studentNum
+app.get("/student/delete/:studentNum", (req, res) => {
+    collegeData.deleteStudentByNum(req.params.studentNum)
+        .then(() => {
+            res.redirect("/students");
+        })
+        .catch(err => {
+            res.status(500).send("Unable to Remove Student / Student not found");
         });
 });
 

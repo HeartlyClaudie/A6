@@ -38,6 +38,15 @@ body {
     border-radius: 8px;
 }
 
+.list-content-section {
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 8px;
+}
+
 /* Footer */
 .footer {
     background: linear-gradient(to right, #1a2980, #26d0ce); /* Gradient */

@@ -1,7 +1,9 @@
+<div class="container">
 <div class="row">
     <div class="col-md-12">
         <br>
         <h2>Courses</h2>
+        <a href="/courses/add" class="btn btn-success float-end">Add New Course</a>
         <hr />
 
         <div class="table-responsive">
@@ -10,6 +12,7 @@
                     <tr>
                         <th>Course Code</th>
                         <th>Course Description</th>
+                        <th></th> <!-- New column for the remove button -->
                     </tr>
                 </thead>
                 <tbody>
@@ -17,6 +20,7 @@
                     <tr>
                         <td><a href="/course/{{this.courseId}}">{{this.courseCode}}</a></td>
                         <td><a href="/students?course={{this.courseId}}">{{this.courseDescription}}</a></td>
+                        <td><a href="/course/delete/{{this.courseId}}" class="btn btn-danger">Remove</a></td> <!-- Remove button -->
                     </tr>
                     {{/each}}
                 </tbody>
@@ -29,4 +33,5 @@
         </div>
         {{/unless}}
     </div>
+</div>
 </div>
