@@ -12,7 +12,7 @@ var sequelize = new Sequelize('SenecaDB', 'SenecaDB_owner', 'PDCnypANk54Q', {
     query: { raw: true } 
 });
 
-// Define the Course model
+// Defining the Course model
 const Course = sequelize.define('Course', {
     courseId: {
         type: Sequelize.INTEGER,
@@ -26,7 +26,7 @@ const Course = sequelize.define('Course', {
     timestamps: false
 });
 
-// Define the Student model
+// Defining the Student model
 const Student = sequelize.define('Student', {
     studentNum: {
         type: Sequelize.INTEGER,
